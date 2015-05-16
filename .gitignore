@@ -71,3 +71,4 @@ hs_err_pid*
 
 app/manifest-merger-release-report.txt
 app/src/main/java/com/harryjamesuk/recommendations/api/ProtectedClass.java
+app/src/main/java/com/harryjamesuk/recommendations/google/ProtectedClass.java
