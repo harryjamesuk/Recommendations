@@ -1,5 +1,6 @@
 package com.harryjamesuk.recommendations;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.harryjamesuk.recommendations.api.Etsy;
+import com.harryjamesuk.recommendations.google.GoogleServicesHelper;
 import com.harryjamesuk.recommendations.model.ActiveListings;
 
 
@@ -21,6 +23,7 @@ public class MainActivity extends ActionBarActivity {
     private View progressBar;
     private TextView errorView;
 
+    private GoogleServicesHelper googleServicesHelper;
     private ListingAdapter adapter;
 
     @Override
@@ -37,19 +40,35 @@ public class MainActivity extends ActionBarActivity {
 
         adapter = new ListingAdapter(this);
 
+        googleServicesHelper = new GoogleServicesHelper(this, adapter);
+
         recyclerView.setAdapter(adapter);
 
-        if (savedInstanceState == null) {
-            showLoading();
-            Etsy.getActiveListings(adapter);
-        } else {
+        showLoading();
+
+        if (savedInstanceState != null) {
             if(savedInstanceState.containsKey(STATE_ACTIVE_LISTINGS)) {
                 adapter.success((ActiveListings) savedInstanceState.getParcelable(STATE_ACTIVE_LISTINGS), null);
-            } else {
-                showLoading();
-                Etsy.getActiveListings(adapter);
             }
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        googleServicesHelper.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        googleServicesHelper.disconnect();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        googleServicesHelper.handleActivityResult(requestCode, resultCode, data);
     }
 
     @Override
