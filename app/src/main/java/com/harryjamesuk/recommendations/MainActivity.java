@@ -3,17 +3,25 @@ package com.harryjamesuk.recommendations;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.harryjamesuk.recommendations.api.Etsy;
+import com.harryjamesuk.recommendations.model.ActiveListings;
+
 
 public class MainActivity extends ActionBarActivity {
+
+    private static String STATE_ACTIVE_LISTINGS = "StateActiveListings";
 
     private RecyclerView recyclerView;
     private View progressBar;
     private TextView errorView;
+
+    private ListingAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +32,34 @@ public class MainActivity extends ActionBarActivity {
         progressBar = findViewById(R.id.progressBar);
         errorView = (TextView) findViewById(R.id.errorView);
 
-        showLoading();
+        // setup RecyclerView
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
+
+        adapter = new ListingAdapter(this);
+
+        recyclerView.setAdapter(adapter);
+
+        if (savedInstanceState == null) {
+            showLoading();
+            Etsy.getActiveListings(adapter);
+        } else {
+            if(savedInstanceState.containsKey(STATE_ACTIVE_LISTINGS)) {
+                adapter.success((ActiveListings) savedInstanceState.getParcelable(STATE_ACTIVE_LISTINGS), null);
+            } else {
+                showLoading();
+                Etsy.getActiveListings(adapter);
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        ActiveListings activeListings = adapter.getActiveListings();
+        if (activeListings != null) {
+            outState.putParcelable(STATE_ACTIVE_LISTINGS, activeListings);
+        }
     }
 
     @Override
