@@ -57,6 +57,15 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
         listingHolder.priceView.setText(listing.price);
         listingHolder.shopNameView.setText(listing.Shop.shop_name);
 
+        listingHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openListing = new Intent(Intent.ACTION_VIEW);
+                openListing.setData(Uri.parse(listing.url));
+                activity.startActivity(openListing);
+            }
+        });
+
         if (isGooglePlayServicesAvailable) {
             listingHolder.plusOneButton.setVisibility(View.VISIBLE);
             listingHolder.plusOneButton.initialize(listing.url, REQUEST_CODE_PLUS_ONE);
