@@ -1,6 +1,7 @@
 package com.harryjamesuk.recommendations.google;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -37,11 +38,22 @@ public class GoogleServicesHelper implements
     }
 
     public void connect() {
-        apiClient.connect();
+        if (isGooglePlayServicesAvailable()) {
+            apiClient.connect();
+        } else {
+            // Tell the listener that Google Play Services is not available.
+            listener.onDisconnected();
+        }
     }
 
     public void disconnect() {
-        apiClient.disconnect();
+        if (isGooglePlayServicesAvailable()) {
+            apiClient.disconnect();
+        }
+        else {
+            // Tell the listener that Google Play Services is not available.
+            listener.onDisconnected();
+        }
     }
 
     private boolean isGooglePlayServicesAvailable() {
@@ -62,16 +74,40 @@ public class GoogleServicesHelper implements
 
     @Override
     public void onConnected(Bundle bundle) {
-
+        // Tell the listener that Google Play Services is available.
+        listener.onConnected();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        // Tell the listener that Google Play Services is not available.
+        listener.onDisconnected();
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(activity, REQUEST_CODE_RESOLUTION);
+            } catch (android.content.IntentSender.SendIntentException e) {
+                // Even if one error doesn't fix, another might so let's try connecting again.
+                connect();
+            }
+        } else {
+            // Tell the listener that Google Play Services is not available.
+            listener.onDisconnected();
+        }
+    }
 
+    public void handleActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_AVAILABILITY || requestCode == REQUEST_CODE_RESOLUTION) {
+            if (resultCode == Activity.RESULT_OK) {
+                connect();
+            }
+            else {
+                // Tell the listener that Google Play Services is not available.
+                listener.onDisconnected();
+            }
+        }
     }
 }
