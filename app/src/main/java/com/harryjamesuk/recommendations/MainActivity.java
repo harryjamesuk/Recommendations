@@ -70,7 +70,9 @@ public class MainActivity extends ActionBarActivity {
         super.onActivityResult(requestCode, resultCode, data);
         googleServicesHelper.handleActivityResult(requestCode, resultCode, data);
 
-        adapter.notifyDataSetChanged();
+        if (requestCode == ListingAdapter.REQUEST_CODE_PLUS_ONE) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
