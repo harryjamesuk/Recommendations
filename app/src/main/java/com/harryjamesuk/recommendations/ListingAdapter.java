@@ -5,9 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.plus.PlusOneButton;
 import com.harryjamesuk.recommendations.api.Etsy;
 import com.harryjamesuk.recommendations.google.GoogleServicesHelper;
 import com.harryjamesuk.recommendations.model.ActiveListings;
@@ -49,9 +51,11 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
         listingHolder.shopNameView.setText(listing.Shop.shop_name);
 
         if (isGooglePlayServicesAvailable) {
-
+            listingHolder.plusOneButton.setVisibility(View.VISIBLE);
+            listingHolder.plusOneButton.initialize(listing.url, i);
+            listingHolder.plusOneButton.setAnnotation(PlusOneButton.ANNOTATION_NONE);
         } else {
-
+            listingHolder.plusOneButton.setVisibility(View.GONE);
         }
 
         Picasso.with(listingHolder.imageView.getContext())
@@ -114,6 +118,8 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
         public TextView titleView;
         public TextView shopNameView;
         public TextView priceView;
+        public PlusOneButton plusOneButton;
+        public ImageButton shareButton;
 
         public ListingHolder(View itemView) {
             super(itemView);
@@ -121,6 +127,8 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
             titleView = (TextView) itemView.findViewById(R.id.listing_title);
             shopNameView = (TextView) itemView.findViewById(R.id.listing_shop_name);
             priceView = (TextView) itemView.findViewById(R.id.listing_price);
+            plusOneButton = (PlusOneButton) itemView.findViewById(R.id.plus_one_button);
+            shareButton = (ImageButton) itemView.findViewById(R.id.listing_share_button);
         }
     }
 }

@@ -69,6 +69,8 @@ public class MainActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         googleServicesHelper.handleActivityResult(requestCode, resultCode, data);
+
+        adapter.notifyDataSetChanged();
     }
 
     @Override
