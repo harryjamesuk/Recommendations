@@ -40,9 +40,9 @@ public class MainActivity extends ActionBarActivity {
 
         adapter = new ListingAdapter(this);
 
-        googleServicesHelper = new GoogleServicesHelper(this, adapter);
-
         recyclerView.setAdapter(adapter);
+
+        googleServicesHelper = new GoogleServicesHelper(this, adapter);
 
         showLoading();
 
